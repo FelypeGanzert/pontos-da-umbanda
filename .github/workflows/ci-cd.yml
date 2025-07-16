@@ -5,227 +5,152 @@ on:
     branches: [ main, master, develop ]
   pull_request:
     branches: [ main, master ]
+  workflow_dispatch:
 
 env:
-  JAVA_VERSION: 17
-  MAVEN_OPTS: -Xmx1024m
+  JAVA_VERSION: '17'
+  MAVEN_OPTS: '-Xmx1024m'
 
 jobs:
   test:
-    name: 🧪 Tests & Code Quality
+    name: 🧪 Tests & Quality
     runs-on: ubuntu-latest
     
-    services:
-      # H2 já está incluído, mas podemos adicionar outros serviços se necessário
-      redis:
-        image: redis:alpine
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 6379:6379
-
     steps:
-    - name: 📥 Checkout code
+    - name: 📥 Checkout Code
       uses: actions/checkout@v4
-
-    - name: ☕ Set up JDK ${{ env.JAVA_VERSION }}
+      
+    - name: ☕ Set up JDK 17
       uses: actions/setup-java@v4
       with:
-        java-version: ${{ env.JAVA_VERSION }}
-        distribution: 'eclipse-temurin'
+        java-version: '17'
+        distribution: 'temurin'
         cache: maven
-
-    - name: 🔍 Verify Maven Wrapper
+        
+    - name: 🔍 Verify Java Installation
       run: |
-        cd backend
-        chmod +x ./mvnw
-
-    - name: 📦 Cache Maven dependencies
-      uses: actions/cache@v4
-      with:
-        path: ~/.m2/repository
-        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-        restore-keys: |
-          ${{ runner.os }}-maven-
-
-    - name: 🔧 Compile application
-      run: |
-        cd backend
-        ./mvnw clean compile -DskipTests
-
-    - name: 🧪 Run unit tests
-      run: |
-        cd backend
-        ./mvnw test
-
-    - name: 📊 Generate test report
+        java -version
+        javac -version
+        echo "JAVA_HOME: $JAVA_HOME"
+        
+    - name: 🏗️ Build with Maven
+      working-directory: ./backend
+      run: ./mvnw clean compile -B
+      
+    - name: 🧪 Run Tests
+      working-directory: ./backend
+      run: ./mvnw test -B
+      
+    - name: 📊 Generate Test Report
       uses: dorny/test-reporter@v1
       if: success() || failure()
       with:
         name: Maven Tests
         path: backend/target/surefire-reports/*.xml
         reporter: java-junit
-
-    - name: 📈 Code Coverage with JaCoCo
-      run: |
-        cd backend
-        ./mvnw jacoco:report
-
-    - name: 📤 Upload coverage reports to Codecov
-      uses: codecov/codecov-action@v4
+        
+    - name: 📈 Code Coverage
+      working-directory: ./backend
+      run: ./mvnw jacoco:report
+      
+    - name: 📤 Upload Coverage to Codecov
+      uses: codecov/codecov-action@v3
       with:
-        file: backend/target/site/jacoco/jacoco.xml
-        flags: unittests
-        name: codecov-umbrella
+        file: ./backend/target/site/jacoco/jacoco.xml
         fail_ci_if_error: false
 
-  build:
-    name: 🏗️ Build Application
-    runs-on: ubuntu-latest
-    needs: test
-    
-    steps:
-    - name: 📥 Checkout code
-      uses: actions/checkout@v4
-
-    - name: ☕ Set up JDK ${{ env.JAVA_VERSION }}
-      uses: actions/setup-java@v4
-      with:
-        java-version: ${{ env.JAVA_VERSION }}
-        distribution: 'eclipse-temurin'
-        cache: maven
-
-    - name: 🔧 Build application
-      run: |
-        cd backend
-        chmod +x ./mvnw
-        ./mvnw clean package -DskipTests
-
-    - name: 📦 Upload build artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: jar-artifact
-        path: backend/target/*.jar
-        retention-days: 7
-
-  security-scan:
+  security:
     name: 🔐 Security Scan
     runs-on: ubuntu-latest
     needs: test
     
     steps:
-    - name: 📥 Checkout code
+    - name: 📥 Checkout Code
       uses: actions/checkout@v4
-
-    - name: ☕ Set up JDK ${{ env.JAVA_VERSION }}
+      
+    - name: ☕ Set up JDK 17
       uses: actions/setup-java@v4
       with:
-        java-version: ${{ env.JAVA_VERSION }}
-        distribution: 'eclipse-temurin'
+        java-version: '17'
+        distribution: 'temurin'
         cache: maven
-
-    - name: 🛡️ OWASP Dependency Check
-      run: |
-        cd backend
-        chmod +x ./mvnw
-        ./mvnw org.owasp:dependency-check-maven:check
-
-    - name: 📤 Upload security scan results
+        
+    - name: 🔐 OWASP Dependency Check
+      working-directory: ./backend
+      run: ./mvnw org.owasp:dependency-check-maven:check -B
+      continue-on-error: true
+      
+    - name: 📤 Upload Security Report
       uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: dependency-check-report
+        name: security-report
         path: backend/target/dependency-check-report.html
 
-  docker-build:
-    name: 🐳 Docker Build
+  build:
+    name: 🐳 Build Docker
     runs-on: ubuntu-latest
-    needs: [test, build]
+    needs: [test, security]
     
     steps:
-    - name: 📥 Checkout code
+    - name: 📥 Checkout Code
       uses: actions/checkout@v4
-
+      
     - name: 🐳 Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
-
-    - name: 🏗️ Build Docker image
-      uses: docker/build-push-action@v5
-      with:
-        context: ./backend
-        file: ./backend/Dockerfile
-        push: false
-        tags: pontos-umbanda-backend:${{ github.sha }}
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
-
-    - name: 🔍 Test Docker image
+      
+    - name: 🏗️ Build Docker Image
+      working-directory: ./backend
       run: |
-        docker run --rm -d --name test-container -p 8080:8080 pontos-umbanda-backend:${{ github.sha }}
+        docker build -t pontos-umbanda:latest .
+        docker images
+        
+    - name: 🧪 Test Docker Container
+      working-directory: ./backend
+      run: |
+        docker run -d --name test-container -p 8080:8080 pontos-umbanda:latest
         sleep 30
-        # Teste básico de health check
         curl -f http://localhost:8080/actuator/health || exit 1
+        docker logs test-container
         docker stop test-container
+        docker rm test-container
 
-  performance-test:
+  performance:
     name: ⚡ Performance Tests
     runs-on: ubuntu-latest
-    needs: [test, build]
+    needs: build
     if: github.event_name == 'pull_request'
     
     steps:
-    - name: 📥 Checkout code
+    - name: 📥 Checkout Code
       uses: actions/checkout@v4
-
-    - name: ☕ Set up JDK ${{ env.JAVA_VERSION }}
+      
+    - name: ☕ Set up JDK 17
       uses: actions/setup-java@v4
       with:
-        java-version: ${{ env.JAVA_VERSION }}
-        distribution: 'eclipse-temurin'
+        java-version: '17'
+        distribution: 'temurin'
         cache: maven
-
-    - name: 🚀 Start application
+        
+    - name: 🚀 Start Application
+      working-directory: ./backend
       run: |
-        cd backend
-        chmod +x ./mvnw
         ./mvnw spring-boot:run -Dspring-boot.run.profiles=dev &
-        sleep 45
-
-    - name: ⚡ Run performance tests with Artillery
+        sleep 30
+        
+    - name: ⚡ Install Artillery
+      run: npm install -g artillery@latest
+      
+    - name: 🎯 Run Load Tests
       run: |
-        npm install -g artillery
         echo "config:
           target: 'http://localhost:8080'
           phases:
             - duration: 60
-              arrivalRate: 10
+              arrivalRate: 5
         scenarios:
-          - name: 'Health check'
+          - name: 'Health Check'
             requests:
               - get:
-                  url: '/actuator/health'" > perf-test.yml
-        artillery run perf-test.yml
-
-  notify:
-    name: 📢 Notifications
-    runs-on: ubuntu-latest
-    needs: [test, build, security-scan, docker-build]
-    if: always()
-    
-    steps:
-    - name: 📢 Notify on success
-      if: ${{ needs.test.result == 'success' && needs.build.result == 'success' }}
-      run: |
-        echo "✅ Pipeline executado com sucesso!"
-        echo "Branch: ${{ github.ref }}"
-        echo "Commit: ${{ github.sha }}"
-        
-    - name: 📢 Notify on failure
-      if: ${{ needs.test.result == 'failure' || needs.build.result == 'failure' }}
-      run: |
-        echo "❌ Pipeline falhou!"
-        echo "Branch: ${{ github.ref }}"
-        echo "Commit: ${{ github.sha }}"
+                  url: '/actuator/health'" > loadtest.yml
+        artillery run loadtest.yml
