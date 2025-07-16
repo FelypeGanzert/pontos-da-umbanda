@@ -173,9 +173,14 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>3.5.3</version>
 				<configuration>
-					<jvm>${java.home}\bin\java</jvm>
-					<useSystemClassLoader>false</useSystemClassLoader>
-					<forkMode>once</forkMode>
+					<includes>
+						<include>**/*Test.java</include>
+						<include>**/*Tests.java</include>
+					</includes>
+					<reportFormat>xml</reportFormat>
+					<useFile>true</useFile>
+					<printSummary>true</printSummary>
+					<forkedProcessTimeoutInSeconds>300</forkedProcessTimeoutInSeconds>
 					<argLine>
 						--add-opens java.base/java.lang=ALL-UNNAMED
 						--add-opens java.base/java.util=ALL-UNNAMED
