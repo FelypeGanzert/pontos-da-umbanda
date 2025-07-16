@@ -1,0 +1,80 @@
+name: 🚀 Deploy to Production
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+        - staging
+        - production
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}/backend
+
+jobs:
+  deploy:
+    name: 🚀 Deploy Application
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'production' }}
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+
+    - name: 🔐 Log in to Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: 🏷️ Extract metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+
+    - name: 🐳 Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: 🏗️ Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: ./backend
+        file: ./backend/Dockerfile
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+    - name: 🚀 Deploy to server
+      run: |
+        echo "🚀 Deploying to ${{ github.event.inputs.environment || 'production' }}"
+        echo "Image: ${{ steps.meta.outputs.tags }}"
+        # Aqui você adicionaria os comandos para deploy real
+        # Exemplos: kubectl, docker-compose, ssh para servidor, etc.
+        
+    - name: 🔍 Health check
+      run: |
+        echo "🔍 Verificando saúde da aplicação..."
+        # Adicione aqui verificações de health check
+        # curl -f $DEPLOYMENT_URL/actuator/health
+        
+    - name: 📢 Deploy notification
+      run: |
+        echo "✅ Deploy realizado com sucesso!"
+        echo "Environment: ${{ github.event.inputs.environment || 'production' }}"
+        echo "Version: ${{ steps.meta.outputs.tags }}"
