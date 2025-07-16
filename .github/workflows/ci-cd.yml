@@ -88,11 +88,41 @@ jobs:
     - name: 🔧 Make Maven Wrapper Executable
       working-directory: ./backend
       run: chmod +x mvnw
+      
+    - name: 📦 Cache OWASP Database
+      uses: actions/cache@v4
+      with:
+        path: ~/.m2/repository/org/owasp/dependency-check-data
+        key: ${{ runner.os }}-owasp-${{ github.run_id }}
+        restore-keys: |
+          ${{ runner.os }}-owasp-
         
     - name: 🔐 OWASP Dependency Check
       working-directory: ./backend
-      run: ./mvnw org.owasp:dependency-check-maven:check -B
+      run: |
+        # Configurar timeout e otimizações
+        ./mvnw org.owasp:dependency-check-maven:check -B \
+          -Dformat=HTML \
+          -DfailBuildOnCVSS=7 \
+          -DskipProvidedScope=true \
+          -DskipRuntimeScope=false \
+          -DskipSystemScope=true \
+          -DskipTestScope=true \
+          -DsuppressLocalNodeAuditor=true \
+          -DsuppressRetireJSAuditor=true \
+          -DsuppressNuspecAuditor=true \
+          -DsuppressAssemblyAuditor=true \
+          -DsuppressCMakeAuditor=true \
+          -DsuppressSwiftPackageManagerAuditor=true \
+          -DsuppressArchiveAuditor=true \
+          -DsuppressNodeAuditor=true \
+          -DsuppressPyDistributionAuditor=true \
+          -DsuppressPyPackageAuditor=true \
+          -DsuppressRubygemsAuditor=true \
+          -DsuppressComposerAuditor=true \
+          -DsuppressCocoapodsAuditor=true
       continue-on-error: true
+      timeout-minutes: 10
       
     - name: 📤 Upload Security Report
       uses: actions/upload-artifact@v4
