@@ -49,6 +49,43 @@ docker compose up --build
 - **Console H2**: http://localhost:8080/h2-console
 - **Actuator** (se habilitado): http://localhost:8080/actuator
 
+## 🎨 Qualidade de Código
+
+O projeto inclui verificações automáticas de qualidade de código:
+
+### Checkstyle
+Verificação de estilo de código baseada no Google Java Style Guide.
+
+```bash
+# Verificar estilo manualmente (recomendado)
+mvnw checkstyle:check
+
+# Gerar relatório completo
+mvnw checkstyle:checkstyle
+
+# Executar com verificação automática
+mvnw clean compile -Pquality-check
+
+# Usar script auxiliar (recomendado)
+# Linux/Mac:
+./check-code-quality.sh
+
+# Windows:
+check-code-quality.cmd
+```
+
+### Relatórios
+- **Checkstyle**: `target/site/checkstyle.html`
+- **Cobertura de testes**: `target/site/jacoco/index.html`
+
+### Dicas para desenvolvimento
+1. Execute verificações antes de commit
+2. Configure seu IDE para usar o arquivo `checkstyle.xml`
+3. Use o profile `dev` para desenvolvimento local (não falha em violações)
+4. Use o profile `ci` para simular ambiente de CI/CD
+
+Para mais detalhes, consulte: [README.CodeQuality.md](README.CodeQuality.md)
+
 ## Perfis disponíveis
 
 - **dev**: Desenvolvimento local (padrão)

@@ -1,6 +1,15 @@
 package com.felypeganzert.backend.entity;
 
-import jakarta.persistence.*;
+import java.time.LocalDateTime;
+
+import org.hibernate.annotations.CreationTimestamp;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -8,9 +17,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-
-import java.time.LocalDateTime;
 
 /**
  * Entidade que representa um Orixá na Umbanda.
@@ -90,13 +96,13 @@ public class Orixa {
 
     @Override
     public String toString() {
-        return "Orixa{" +
-                "id=" + id +
-                ", nome='" + nome + '\'' +
-                ", nomeAfricano='" + nomeAfricano + '\'' +
-                ", elemento='" + elemento + '\'' +
-                ", diaSemana='" + diaSemana + '\'' +
-                ", ativo=" + ativo +
-                '}';
+        return "Orixa{" 
+                + "id=" + id
+                + ", nome='" + nome + '\''
+                + ", nomeAfricano='" + nomeAfricano + '\''
+                + ", elemento='" + elemento + '\''
+                + ", diaSemana='" + diaSemana + '\''
+                + ", ativo=" + ativo
+                + '}';
     }
 }

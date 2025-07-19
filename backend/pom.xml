@@ -35,6 +35,9 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<maven.compiler.encoding>UTF-8</maven.compiler.encoding>
+		<!-- Configurações do Checkstyle -->
+		<checkstyle.skip>false</checkstyle.skip>
+		<checkstyle.failOnViolation>true</checkstyle.failOnViolation>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -194,6 +197,38 @@
 				</executions>
 			</plugin>
 			
+			<!-- Checkstyle Plugin -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>3.3.1</version>
+				<configuration>
+					<configLocation>checkstyle.xml</configLocation>
+					<suppressionsLocation>checkstyle-suppressions.xml</suppressionsLocation>
+					<includeTestSourceDirectory>true</includeTestSourceDirectory>
+					<encoding>UTF-8</encoding>
+					<consoleOutput>true</consoleOutput>
+					<failsOnError>${checkstyle.failOnViolation}</failsOnError>
+					<linkXRef>false</linkXRef>
+					<skip>${checkstyle.skip}</skip>
+					<sourceDirectories>
+						<sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
+					</sourceDirectories>
+					<testSourceDirectories>
+						<testSourceDirectory>${project.build.testSourceDirectory}</testSourceDirectory>
+					</testSourceDirectories>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>com.puppycrawl.tools</groupId>
+						<artifactId>checkstyle</artifactId>
+						<version>10.12.4</version>
+					</dependency>
+				</dependencies>
+				<!-- Execuções removidas para evitar warning do IDE -->
+				<!-- Checkstyle executado apenas manualmente ou via profiles específicos -->
+			</plugin>
+			
 			<!-- OWASP Dependency Check Plugin -->
 			<plugin>
 				<groupId>org.owasp</groupId>
@@ -207,5 +242,76 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<profiles>
+		<!-- Profile para desenvolvimento local -->
+		<profile>
+			<id>dev</id>
+			<properties>
+				<checkstyle.skip>false</checkstyle.skip>
+				<checkstyle.failOnViolation>false</checkstyle.failOnViolation>
+			</properties>
+		</profile>
+		
+		<!-- Profile para CI/CD -->
+		<profile>
+			<id>ci</id>
+			<properties>
+				<checkstyle.skip>false</checkstyle.skip>
+				<checkstyle.failOnViolation>true</checkstyle.failOnViolation>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-checkstyle-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>checkstyle-check</id>
+								<phase>validate</phase>
+								<goals>
+									<goal>check</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		
+		<!-- Profile para verificação completa -->
+		<profile>
+			<id>quality-check</id>
+			<properties>
+				<checkstyle.skip>false</checkstyle.skip>
+				<checkstyle.failOnViolation>true</checkstyle.failOnViolation>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-checkstyle-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>checkstyle-check</id>
+								<phase>validate</phase>
+								<goals>
+									<goal>check</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		
+		<!-- Profile para pular verificações de estilo -->
+		<profile>
+			<id>skip-style</id>
+			<properties>
+				<checkstyle.skip>true</checkstyle.skip>
+			</properties>
+		</profile>
+	</profiles>
 
 </project>
