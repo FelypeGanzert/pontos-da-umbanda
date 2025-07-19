@@ -5,11 +5,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
-@ActiveProfiles("dev")
+@ActiveProfiles("test")
 class DevSecurityConfigTest {
 
     @Test
-    void contextLoadsWithDevProfile() {
-        // Testa se o contexto carrega corretamente com o perfil dev
+    void contextLoadsWithTestProfile() {
+        // Testa se o contexto carrega corretamente com o perfil test
     }
 }

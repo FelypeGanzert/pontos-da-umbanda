@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!DOCTYPE suppressions PUBLIC
+    "-//Checkstyle//DTD SuppressionFilter Configuration 1.2//EN"
+    "https://checkstyle.org/dtds/suppressions_1_2.dtd">
+
+<suppressions>
+    <!-- Suprimir verificações para arquivos gerados -->
+    <suppress checks=".*" files="target[/\\].*"/>
+    <suppress checks=".*" files=".*[/\\]target[/\\].*"/>
+    
+    <!-- Suprimir verificações para classes de configuração do Spring -->
+    <suppress checks="HideUtilityClassConstructor" files=".*Application\.java"/>
+    <suppress checks="HideUtilityClassConstructor" files=".*Config\.java"/>
+    
+    <!-- Suprimir MagicNumber para classes de teste -->
+    <suppress checks="MagicNumber" files=".*Test\.java"/>
+    <suppress checks="MagicNumber" files=".*Tests\.java"/>
+    
+    <!-- Suprimir verificações específicas para arquivos de resources -->
+    <suppress checks=".*" files=".*\.properties"/>
+    <suppress checks=".*" files=".*\.sql"/>
+    
+    <!-- Suprimir linha muito longa para imports específicos -->
+    <suppress checks="LineLength" files=".*" lines="1-20"/>
+</suppressions>

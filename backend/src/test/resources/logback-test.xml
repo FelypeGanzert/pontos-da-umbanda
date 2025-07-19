@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="false">
+    <!-- Configuração de logging para testes - suprime CONDITIONS EVALUATION REPORT -->
+    
+    <!-- Console appender mais silencioso -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %-5level %logger{20} - %msg%n</pattern>
+        </encoder>
+        <!-- Filtro para suprimir mensagens específicas -->
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+            <evaluator>
+                <expression>message.contains("CONDITIONS EVALUATION REPORT")</expression>
+            </evaluator>
+            <onMismatch>NEUTRAL</onMismatch>
+            <onMatch>DENY</onMatch>
+        </filter>
+    </appender>
+
+    <!-- Logger específico para o projeto -->
+    <logger name="com.felypeganzert" level="INFO" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+
+    <!-- Silenciar completamente logs do Spring Boot -->
+    <logger name="org.springframework.boot" level="OFF"/>
+    <logger name="org.springframework.boot.autoconfigure" level="OFF"/>
+    <logger name="org.springframework.boot.context" level="OFF"/>
+    <logger name="org.springframework.boot.env" level="OFF"/>
+    <logger name="org.springframework.boot.autoconfigure.logging" level="OFF"/>
+    <logger name="org.springframework.context" level="OFF"/>
+    <logger name="org.springframework.web" level="OFF"/>
+    <logger name="org.springframework.security" level="OFF"/>
+    <logger name="org.springframework.test" level="OFF"/>
+    <logger name="org.springframework.test.context" level="OFF"/>
+    <logger name="org.hibernate" level="OFF"/>
+    <logger name="org.h2" level="OFF"/>
+    <logger name="com.zaxxer.hikari" level="OFF"/>
+    <logger name="org.apache.maven" level="OFF"/>
+    
+    <!-- Suprimir especificamente o CONDITIONS EVALUATION REPORT -->
+    <logger name="org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener" level="OFF"/>
+    <logger name="org.springframework.boot.actuate.autoconfigure" level="OFF"/>
+    
+    <!-- Root logger completamente silencioso exceto para erros críticos -->
+    <root level="OFF">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+</configuration>

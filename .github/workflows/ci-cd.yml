@@ -42,6 +42,22 @@ jobs:
       working-directory: ./backend
       run: ./mvnw clean compile -B
       
+    - name: 🎨 Code Style Check (Checkstyle)
+      working-directory: ./backend
+      run: ./mvnw checkstyle:check -B -Pci
+      
+    - name: 📊 Generate Checkstyle Report
+      working-directory: ./backend
+      run: ./mvnw checkstyle:checkstyle -B -Pci
+      if: always()
+      
+    - name: 📤 Upload Checkstyle Report
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: checkstyle-report
+        path: backend/target/site/checkstyle.html
+      
     - name: 🧪 Run Tests
       working-directory: ./backend
       run: ./mvnw test -B
@@ -68,10 +84,85 @@ jobs:
         file: ./backend/target/site/jacoco/jacoco.xml
         fail_ci_if_error: false
 
+  code-quality:
+    name: 📊 Code Quality Analysis
+    runs-on: ubuntu-latest
+    needs: test
+    if: success() || failure()
+    
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+      
+    - name: ☕ Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven
+        
+    - name: 🔧 Make Maven Wrapper Executable
+      working-directory: ./backend
+      run: chmod +x mvnw
+      
+    - name: 🎨 Detailed Checkstyle Analysis
+      working-directory: ./backend
+      run: |
+        ./mvnw checkstyle:checkstyle -B -Pci
+        echo "📊 Checkstyle analysis completed"
+        
+        # Contar violações
+        if [ -f target/checkstyle-result.xml ]; then
+          violations=$(grep -c "<error" target/checkstyle-result.xml || echo "0")
+          echo "⚠️  Total Checkstyle violations: $violations"
+          
+          if [ "$violations" -gt 0 ]; then
+            echo "📋 Top violations:"
+            grep -o 'message="[^"]*"' target/checkstyle-result.xml | sort | uniq -c | sort -nr | head -10
+          fi
+        fi
+      continue-on-error: true
+      
+    - name: 📤 Upload Detailed Reports
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: code-quality-reports
+        path: |
+          backend/target/site/checkstyle.html
+          backend/target/checkstyle-result.xml
+          backend/target/site/jacoco/
+        
+    - name: 📋 Code Quality Summary
+      if: always()
+      run: |
+        echo "## 📊 Code Quality Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        # Checkstyle Summary
+        if [ -f backend/target/checkstyle-result.xml ]; then
+          violations=$(grep -c "<error" backend/target/checkstyle-result.xml || echo "0")
+          echo "### 🎨 Checkstyle Analysis" >> $GITHUB_STEP_SUMMARY
+          echo "- **Total violations**: $violations" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "$violations" -eq 0 ]; then
+            echo "- **Status**: ✅ No style violations found!" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- **Status**: ⚠️ Style violations found" >> $GITHUB_STEP_SUMMARY
+            echo "- **Details**: Check the uploaded Checkstyle report" >> $GITHUB_STEP_SUMMARY
+          fi
+        else
+          echo "### 🎨 Checkstyle Analysis" >> $GITHUB_STEP_SUMMARY
+          echo "- **Status**: ❌ Report not generated" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "📁 **Artifacts**: Download detailed reports from the workflow artifacts" >> $GITHUB_STEP_SUMMARY
+
   security:
     name: 🔐 Security Scan
     runs-on: ubuntu-latest
-    needs: test
+    needs: [test, code-quality]
     if: success() || failure()
     
     steps:
@@ -134,7 +225,7 @@ jobs:
   build:
     name: 🐳 Build & Test
     runs-on: ubuntu-latest
-    needs: [test]
+    needs: [test, code-quality]
     if: success()
     
     steps:

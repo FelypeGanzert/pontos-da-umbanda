@@ -30,12 +30,27 @@
 		<java.version>17</java.version>
 		<maven.compiler.source>17</maven.compiler.source>
 		<maven.compiler.target>17</maven.compiler.target>
+		<org.mapstruct.version>1.6.3</org.mapstruct.version>
+		<!-- Configurações de encoding UTF-8 para todo o projeto -->
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<maven.compiler.encoding>UTF-8</maven.compiler.encoding>
+		<!-- Configurações do Checkstyle -->
+		<checkstyle.skip>false</checkstyle.skip>
+		<checkstyle.failOnViolation>true</checkstyle.failOnViolation>
 	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
 			<version>2.3.0</version>
+		</dependency>
+
+		<!-- MapStruct -->
+		<dependency>
+			<groupId>org.mapstruct</groupId>
+			<artifactId>mapstruct</artifactId>
+			<version>${org.mapstruct.version}</version>
 		</dependency>
 
 		<dependency>
@@ -95,12 +110,37 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
+					<source>17</source>
+					<target>17</target>
+					<encoding>UTF-8</encoding>
 					<annotationProcessorPaths>
+						<path>
+							<groupId>org.mapstruct</groupId>
+							<artifactId>mapstruct-processor</artifactId>
+							<version>${org.mapstruct.version}</version>
+						</path>
 						<path>
 							<groupId>org.projectlombok</groupId>
 							<artifactId>lombok</artifactId>
+							<version>${lombok.version}</version>
+						</path>
+						<path>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok-mapstruct-binding</artifactId>
+							<version>0.2.0</version>
 						</path>
 					</annotationProcessorPaths>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<argLine>-Dfile.encoding=UTF-8 -Dspring.profiles.active=test</argLine>
+					<systemPropertyVariables>
+						<file.encoding>UTF-8</file.encoding>
+						<spring.profiles.active>test</spring.profiles.active>
+					</systemPropertyVariables>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -157,6 +197,38 @@
 				</executions>
 			</plugin>
 			
+			<!-- Checkstyle Plugin -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>3.3.1</version>
+				<configuration>
+					<configLocation>checkstyle.xml</configLocation>
+					<suppressionsLocation>checkstyle-suppressions.xml</suppressionsLocation>
+					<includeTestSourceDirectory>true</includeTestSourceDirectory>
+					<encoding>UTF-8</encoding>
+					<consoleOutput>true</consoleOutput>
+					<failsOnError>${checkstyle.failOnViolation}</failsOnError>
+					<linkXRef>false</linkXRef>
+					<skip>${checkstyle.skip}</skip>
+					<sourceDirectories>
+						<sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
+					</sourceDirectories>
+					<testSourceDirectories>
+						<testSourceDirectory>${project.build.testSourceDirectory}</testSourceDirectory>
+					</testSourceDirectories>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>com.puppycrawl.tools</groupId>
+						<artifactId>checkstyle</artifactId>
+						<version>10.12.4</version>
+					</dependency>
+				</dependencies>
+				<!-- Execuções removidas para evitar warning do IDE -->
+				<!-- Checkstyle executado apenas manualmente ou via profiles específicos -->
+			</plugin>
+			
 			<!-- OWASP Dependency Check Plugin -->
 			<plugin>
 				<groupId>org.owasp</groupId>
@@ -168,26 +240,78 @@
 					<skipRuntimeScope>false</skipRuntimeScope>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.5.3</version>
-				<configuration>
-					<includes>
-						<include>**/*Test.java</include>
-						<include>**/*Tests.java</include>
-					</includes>
-					<reportFormat>xml</reportFormat>
-					<useFile>true</useFile>
-					<printSummary>true</printSummary>
-					<forkedProcessTimeoutInSeconds>300</forkedProcessTimeoutInSeconds>
-					<argLine>
-						--add-opens java.base/java.lang=ALL-UNNAMED
-						--add-opens java.base/java.util=ALL-UNNAMED
-					</argLine>
-				</configuration>
-			</plugin>
 		</plugins>
 	</build>
+
+	<profiles>
+		<!-- Profile para desenvolvimento local -->
+		<profile>
+			<id>dev</id>
+			<properties>
+				<checkstyle.skip>false</checkstyle.skip>
+				<checkstyle.failOnViolation>false</checkstyle.failOnViolation>
+			</properties>
+		</profile>
+		
+		<!-- Profile para CI/CD -->
+		<profile>
+			<id>ci</id>
+			<properties>
+				<checkstyle.skip>false</checkstyle.skip>
+				<checkstyle.failOnViolation>true</checkstyle.failOnViolation>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-checkstyle-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>checkstyle-check</id>
+								<phase>validate</phase>
+								<goals>
+									<goal>check</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		
+		<!-- Profile para verificação completa -->
+		<profile>
+			<id>quality-check</id>
+			<properties>
+				<checkstyle.skip>false</checkstyle.skip>
+				<checkstyle.failOnViolation>true</checkstyle.failOnViolation>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-checkstyle-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>checkstyle-check</id>
+								<phase>validate</phase>
+								<goals>
+									<goal>check</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		
+		<!-- Profile para pular verificações de estilo -->
+		<profile>
+			<id>skip-style</id>
+			<properties>
+				<checkstyle.skip>true</checkstyle.skip>
+			</properties>
+		</profile>
+	</profiles>
 
 </project>
