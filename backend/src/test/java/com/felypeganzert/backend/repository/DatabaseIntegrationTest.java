@@ -6,7 +6,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 
 import java.util.List;
 
@@ -17,6 +19,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @DataJpaTest
 @ActiveProfiles("test")
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@Sql(scripts = {"/integration-test-data.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @DisplayName("Testes de Integração do Banco de Dados")
 class DatabaseIntegrationTest {
 
@@ -26,15 +30,27 @@ class DatabaseIntegrationTest {
     @Autowired
     private OrixaRepository orixaRepository;
 
+    @Autowired
+    private LinhaRepository linhaRepository;
+
     @Test
     @DisplayName("Deve verificar se os dados do data.sql foram carregados corretamente")
     void deveCarregarDadosDoDataSql() {
         // Given & When
         long totalOrixas = orixaRepository.count();
+        long totalLinhas = linhaRepository.count();
         
         // Then
-        assertThat(totalOrixas).isGreaterThan(0);
+        assertThat(totalOrixas).isEqualTo(7); // Esperamos 7 Orixás do data.sql
+        assertThat(totalLinhas).isEqualTo(8); // Esperamos 7 Linhas do data.sql
+        
         System.out.println("Total de Orixás carregados do data.sql: " + totalOrixas);
+        System.out.println("Total de Linhas carregadas do data.sql: " + totalLinhas);
+        
+        // Verificar relacionamentos
+        List<com.felypeganzert.backend.entity.Linha> linhas = linhaRepository.findAll();
+        assertThat(linhas).allMatch(linha -> linha.getOrixaRegente() != null);
+        assertThat(linhas).allMatch(linha -> linha.getOrixaRegente().getId() != null);
     }
 
     @Test

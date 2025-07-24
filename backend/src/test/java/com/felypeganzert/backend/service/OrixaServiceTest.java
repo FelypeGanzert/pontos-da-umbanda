@@ -18,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.felypeganzert.backend.dto.OrixaDTO;
 import com.felypeganzert.backend.entity.Orixa;
+import com.felypeganzert.backend.mapper.OrixaMapper;
 import com.felypeganzert.backend.repository.OrixaRepository;
 
 /**
@@ -29,6 +30,9 @@ class OrixaServiceTest {
 
     @Mock
     private OrixaRepository orixaRepository;
+    
+    @Mock
+    private OrixaMapper orixaMapper;
 
     private OrixaService orixaService;
 
@@ -37,7 +41,7 @@ class OrixaServiceTest {
 
     @BeforeEach
     void setUp() {
-        orixaService = new OrixaService(orixaRepository);
+        orixaService = new OrixaService(orixaRepository, orixaMapper);
         
         oxala = Orixa.builder()
                 .id(1L)
@@ -69,7 +73,13 @@ class OrixaServiceTest {
     void deveBuscarTodosOrixasAtivos() {
         // Given
         List<Orixa> orixasAtivos = Arrays.asList(oxala, ogum);
+        List<OrixaDTO> orixasDTOEsperados = Arrays.asList(
+            OrixaDTO.builder().id(1L).nome("Oxalá").ativo(true).build(),
+            OrixaDTO.builder().id(2L).nome("Ogum").ativo(true).build()
+        );
+        
         when(orixaRepository.findByAtivoTrue()).thenReturn(orixasAtivos);
+        when(orixaMapper.toDTOList(orixasAtivos)).thenReturn(orixasDTOEsperados);
 
         // When
         List<OrixaDTO> resultado = orixaService.findAllAtivos();
@@ -85,13 +95,18 @@ class OrixaServiceTest {
         assertThat(resultado.get(1).getAtivo()).isTrue();
         
         verify(orixaRepository).findByAtivoTrue();
+        verify(orixaMapper).toDTOList(orixasAtivos);
     }
 
     @Test
     @DisplayName("Deve retornar lista vazia quando não há Orixás ativos")
     void deveRetornarListaVaziaQuandoNaoHaOrixasAtivos() {
         // Given
-        when(orixaRepository.findByAtivoTrue()).thenReturn(Collections.emptyList());
+        List<Orixa> listaVazia = Collections.emptyList();
+        List<OrixaDTO> listaDTOVazia = Collections.emptyList();
+        
+        when(orixaRepository.findByAtivoTrue()).thenReturn(listaVazia);
+        when(orixaMapper.toDTOList(listaVazia)).thenReturn(listaDTOVazia);
 
         // When
         List<OrixaDTO> resultado = orixaService.findAllAtivos();
@@ -101,5 +116,6 @@ class OrixaServiceTest {
         assertThat(resultado).isEmpty();
         
         verify(orixaRepository).findByAtivoTrue();
+        verify(orixaMapper).toDTOList(listaVazia);
     }
 }

@@ -38,28 +38,35 @@ Para garantir implementação consistente, toda solicitação deve incluir:
 4. ❓ **Preciso de CRUD completo ou apenas consulta?**
 
 ### **🏗️ Implementação Técnica**
-5. ❓ **Vou usar MapStruct para mapeamentos?**
+5. ❓ **Vou usar ModelMapper para mapeamentos? (NUNCA MapStruct com Lombok)**
 6. ❓ **Os relacionamentos JPA são necessários ou posso usar apenas IDs?**
 7. ❓ **Esta entidade precisa de índices específicos?**
 8. ❓ **Vou seguir o padrão Entity→DTO→Mapper→Repository→Service→Controller?**
+9. ❓ **Configurei o ModelMapper com strategy STRICT e fieldAccessLevel PRIVATE?**
+10. ❓ **Estou mapeando relacionamentos manualmente nos Mappers (não automático)?**
 
 ### **🔒 Segurança & Endpoints**
-9. ❓ **Esta funcionalidade precisa de autenticação/autorização?**
-10. ❓ **Vou usar `@WithMockUser` nos testes de controller?**
-11. ❓ **O endpoint retorna objeto direto ou `ResponseEntity`?**
-12. ❓ **Preciso configurar validações específicas (@Valid, @NotNull, etc.)?**
+11. ❓ **Esta funcionalidade precisa de autenticação/autorização?**
+12. ❓ **Vou usar `@WithMockUser` nos testes de controller?**
+13. ❓ **O endpoint retorna objeto direto ou `ResponseEntity`?**
+14. ❓ **Preciso configurar validações específicas (@Valid, @NotNull, etc.)?**
 
 ### **🧪 Testes & Qualidade**
-13. ❓ **Vou criar testes para TODAS as camadas (Repository, Service, Controller)?**
-14. ❓ **Os testes incluem casos de erro e edge cases?**
-15. ❓ **Configurei UTF-8 em todas as partes necessárias?**
-16. ❓ **Os logs estão usando `@Slf4j` com níveis apropriados?**
+15. ❓ **Vou criar testes para TODAS as camadas (Repository, Service, Controller)?**
+16. ❓ **Os testes incluem casos de erro e edge cases?**
+17. ❓ **Configurei UTF-8 em todas as partes necessárias?**
+18. ❓ **Os logs estão usando `@Slf4j` com níveis apropriados?**
+19. ❓ **Vou evitar `deleteAll()` em `@BeforeEach` para não causar constraint violations?**
+20. ❓ **Estou criando dados únicos por teste (sufixo "Teste" nos nomes)?**
+21. ❓ **Configurei `integration-test-data.sql` para testes isolados?**
 
 ### **⚙️ Configurações & Deploy**
-17. ❓ **Preciso atualizar schema.sql e data.sql?**
-18. ❓ **Vou adicionar novas dependências no pom.xml?**
-19. ❓ **Esta mudança afeta profiles do Spring (dev/test/prod)?**
-20. ❓ **Preciso atualizar documentação ou READMEs?**
+22. ❓ **Preciso atualizar schema.sql e data.sql?**
+23. ❓ **Vou adicionar novas dependências no pom.xml?**
+24. ❓ **Esta mudança afeta profiles do Spring (dev/test/prod)?**
+25. ❓ **Preciso atualizar documentação ou READMEs?**
+26. ❓ **Verifiquei se não há conflitos entre MapStruct e Lombok no build?**
+27. ❓ **Configurei ModelMapperConfig como @Configuration @Bean?**
 
 ---
 
@@ -67,14 +74,18 @@ Para garantir implementação consistente, toda solicitação deve incluir:
 
 ### **🚨 BLOQUEADORES (Parar implementação se TRUE)**
 - **Se NÃO para 1**: Questionar necessidade real
-- **Se NÃO para 5**: Usar MapStruct obrigatório
+- **Se SIM para 5**: ⚠️ NUNCA usar MapStruct com Lombok - usar ModelMapper
 - **Se NÃO para 8**: Seguir padrão arquitetural obrigatório
-- **Se NÃO para 13**: Testes são obrigatórios
+- **Se NÃO para 15**: Testes são obrigatórios
+- **Se SIM para 19**: ⚠️ NUNCA usar deleteAll() - causa constraint violations
+- **Se SIM para 26**: ⚠️ CONFLITO CRÍTICO - remover MapStruct
 
 ### **⚠️ ALERTAS (Revisar abordagem se TRUE)**
 - **Se SIM para 3**: Revisar impacto arquitetural
 - **Se SIM para 7**: Questionar se índices são necessários
-- **Se SIM para 18-20**: Planejar impacto em outras partes
+- **Se SIM para 23-25**: Planejar impacto em outras partes
+- **Se NÃO para 20**: ⚠️ Dados duplicados causam UNIQUE constraint violations
+- **Se NÃO para 21**: ⚠️ Testes vão interferir uns nos outros
 
 ### **✅ IMPLEMENTAÇÃO PADRÃO (Se não especificado)**
 - **Endpoints**: Apenas `/ativos` (GET)
@@ -82,6 +93,8 @@ Para garantir implementação consistente, toda solicitação deve incluir:
 - **Relacionamentos JPA**: `@ManyToOne` com `LAZY`
 - **Testes**: Repository + Service + Controller
 - **Logs**: `@Slf4j` com `debug` para operações
+- **Mapeamento**: ModelMapper com @Component e configuração STRICT
+- **Dados de Teste**: Criar únicos por teste, sem deleteAll()
 
 ---
 
@@ -133,7 +146,8 @@ CREATE TABLE linhas (
 - JPA: @ManyToOne LAZY para os Orixás
 
 ### Implementação:
-Seguir guidelines padrão com Entity→DTO→Mapper→Repository→Service→Controller
+Seguir guidelines padrão com Entity→DTO→ModelMapper→Repository→Service→Controller
+⚠️ OBRIGATÓRIO: Usar ModelMapper (NUNCA MapStruct com Lombok)
 ```
 
 ---

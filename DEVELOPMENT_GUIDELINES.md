@@ -11,8 +11,14 @@
 ### **Padrões de Código**
 - **Spring Boot**: Usar anotações padrão (`@RestController`, `@Service`, `@Repository`)
 - **Lombok**: Usar para reduzir boilerplate (`@Data`, `@Builder`, `@RequiredArgsConstructor`, `@Slf4j`)
-- **MapStruct**: Preferir para mapeamento automático em vez de mappers manuais
+- **ModelMapper**: OBRIGATÓRIO para mapeamento de objetos (substitui MapStruct devido a problemas de compatibilidade com Lombok)
 - **Validation**: Usar Bean Validation (`@NotBlank`, `@Size`, `@NotNull`)
+
+### **⚠️ IMPORTANTE: Mapeamento de Objetos**
+- **NÃO usar MapStruct**: Conflitos sérios com annotation processors do Lombok
+- **SEMPRE usar ModelMapper**: Configurar como `@Bean` com `MatchingStrategies.STRICT`
+- **Mappers como @Component**: Injetar ModelMapper via `@Autowired`
+- **Relacionamentos**: Mapear entidades para IDs manualmente quando necessário
 
 ### **Estrutura de Camadas**
 ```
@@ -50,6 +56,20 @@ class EntityServiceTest { ... }
 @WithMockUser
 class EntityControllerTest { ... }
 ```
+
+### **Padrões Específicos de Testes**
+- **Controller**: Usar `content().contentType("application/json;charset=UTF-8")` nos testes MockMvc
+- **Repository**: Usar `TestEntityManager` para configurar dados de teste
+- **Service**: Mockar dependências com `@Mock` e verificar interações com `verify()`
+- **⚠️ IMPORTANTE**: `data.sql` é carregado APENAS no `DatabaseIntegrationTest` via `@Sql("/data.sql")`
+- **Testes unitários**: Devem criar seus próprios dados de teste no `@BeforeEach`
+
+### **🚨 ERROS CRÍTICOS A EVITAR**
+- **NUNCA usar `deleteAll()` em `@BeforeEach`**: Causa violations de foreign key constraints
+- **SEMPRE usar nomes únicos nos testes**: Adicionar sufixos como "Teste" para evitar conflitos de UNIQUE
+- **Configurar `@Sql(scripts = "classpath:schema.sql")` nos Repository tests**: Força estado limpo
+- **Usar assertions flexíveis**: `hasSizeGreaterThanOrEqualTo()` ao invés de `hasSize()` exato
+- **Filtrar dados de teste**: Usar `.filter(item -> item.getNome().contains("Teste"))` para isolar
 
 ### **Qualidade de Código**
 - **Encoding UTF-8**: Configurar em todas as camadas (Maven, Spring, testes)

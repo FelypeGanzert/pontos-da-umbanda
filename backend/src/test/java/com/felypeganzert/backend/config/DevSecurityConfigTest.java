@@ -8,6 +8,7 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles("test")
 class DevSecurityConfigTest {
 
+
     @Test
     void contextLoadsWithTestProfile() {
         // Testa se o contexto carrega corretamente com o perfil test
