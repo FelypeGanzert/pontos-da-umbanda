@@ -85,7 +85,7 @@ class LinhaRepositoryTest {
 
     @Test
     @DisplayName("Deve retornar lista vazia quando não há linhas ativas")
-    void testFindByAtivoTrue_QuandoNaoHaLinhasAtivas() {
+    void testFindByAtivoTrueQuandoNaoHaLinhasAtivas() {
         // Given
         Orixa orixa = Orixa.builder()
                 .nome("Oxalá Teste Inativo LinhaRepo")

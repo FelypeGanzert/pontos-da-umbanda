@@ -17,7 +17,9 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Testes do LinhaService")
@@ -100,7 +102,7 @@ class LinhaServiceTest {
 
     @Test
     @DisplayName("Deve retornar lista vazia quando não há linhas ativas")
-    void testFindAllAtivos_QuandoNaoHaLinhasAtivas() {
+    void testFindAllAtivosQuandoNaoHaLinhasAtivas() {
         // Given
         List<Linha> linhasVazias = Collections.emptyList();
         List<LinhaDTO> linhaDTOsVazias = Collections.emptyList();

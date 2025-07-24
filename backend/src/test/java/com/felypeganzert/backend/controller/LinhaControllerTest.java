@@ -87,7 +87,7 @@ class LinhaControllerTest {
 
     @Test
     @DisplayName("GET /api/v1/linhas/ativos - Deve retornar lista vazia quando não há linhas ativas")
-    void testFindAllAtivos_QuandoNaoHaLinhasAtivas() throws Exception {
+    void testFindAllAtivosQuandoNaoHaLinhasAtivas() throws Exception {
         // Given
         List<LinhaDTO> linhaDTOsVazias = Collections.emptyList();
 
