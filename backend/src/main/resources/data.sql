@@ -21,3 +21,15 @@ INSERT INTO orixas (nome, nome_africano, descricao, cor_primaria, dia_semana, el
 -- Verificar se os dados foram inseridos corretamente
 -- SELECT COUNT(*) as total_orixas FROM orixas;
 -- SELECT nome, nome_africano, elemento, dia_semana FROM orixas ORDER BY nome;
+
+-- Inserir as Linhas espirituais da Umbanda
+INSERT INTO linhas (nome, orixa_regente_id, orixa_adjunto_id, descricao, caracteristicas, cores, elementos_trabalho, numero_ordem) VALUES
+('Linha de Oxalá', 1, NULL, 'Linha da paz, sabedoria e criação divina', 'Trabalham com paz, harmonização, cura espiritual e evolução', 'Branco, Cristal', 'Velas brancas, flores brancas, água', 1),
+('Linha de Iemanjá', 5, NULL, 'Linha das águas salgadas, maternidade e proteção', 'Trabalham com limpeza, proteção maternal, cura emocional', 'Azul claro, Branco', 'Água do mar, conchas, perfumes', 2),
+('Linha de Ogum', 2, NULL, 'Linha da guerra santa, abertura de caminhos', 'Trabalham com demandas, abertura de caminhos, proteção', 'Verde, Vermelho', 'Espadas, ferramentas, cerveja', 3),
+('Linha de Oxóssi', 3, NULL, 'Linha das matas, fartura e abundância', 'Trabalham com cura pelas ervas, fartura, caça ao mal', 'Verde, Azul', 'Arco e flecha, frutas, mel', 4),
+('Linha de Xangô', 4, NULL, 'Linha da justiça, ordem e equilíbrio', 'Trabalham com justiça, organização, quebra de demandas', 'Marrom, Vermelho', 'Machado duplo, pedras, azeite dendê', 5),
+('Linha de Iansã', 7, NULL, 'Linha dos ventos, tempestades e eguns', 'Trabalham com movimento, mudanças, eguns', 'Rosa, Roxo', 'Leque, espada, flores amarelas', 6),
+('Linha das Águas', 6, 5, 'Linha de Oxum e Iemanjá unidas', 'Trabalham com amor, prosperidade, maternidade', 'Dourado, Azul', 'Águas, espelhos, jóias', 7),
+('Linha Mista', 1, 2, 'Linha de trabalhos diversos com Oxalá e Ogum', 'Trabalham com paz e proteção, caminhos abertos com sabedoria', 'Branco, Verde', 'Velas brancas e verdes, água e espada', 8);
+

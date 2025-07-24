@@ -80,7 +80,7 @@ docker compose up -d
 - **Documentação**: http://localhost:8080/swagger-ui.html
 - **H2 Console**: http://localhost:8080/h2-console
 - **Health Check**: http://localhost:8080/actuator/health
-- **Métricas**: http://localhost:8080/actuator/metrics
+  - **Métricas**: http://localhost:8080/actuator/metrics
 - **Info**: http://localhost:8080/actuator/info
 
 ### **Configuração H2 Database**

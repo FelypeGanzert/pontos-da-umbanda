@@ -14,12 +14,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/api/v1/orixas")
 @RequiredArgsConstructor
-@Slf4j
 @Tag(name = "Orixás", description = "API para gerenciamento de Orixás da Umbanda")
 public class OrixaController {
 

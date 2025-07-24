@@ -30,7 +30,8 @@
 		<java.version>17</java.version>
 		<maven.compiler.source>17</maven.compiler.source>
 		<maven.compiler.target>17</maven.compiler.target>
-		<org.mapstruct.version>1.6.3</org.mapstruct.version>
+		<lombok.version>1.18.36</lombok.version>
+		<modelmapper.version>3.2.0</modelmapper.version>
 		<!-- Configurações de encoding UTF-8 para todo o projeto -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -43,14 +44,14 @@
 		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-			<version>2.3.0</version>
+			<version>2.7.0</version>
 		</dependency>
 
-		<!-- MapStruct -->
+		<!-- ModelMapper -->
 		<dependency>
-			<groupId>org.mapstruct</groupId>
-			<artifactId>mapstruct</artifactId>
-			<version>${org.mapstruct.version}</version>
+			<groupId>org.modelmapper</groupId>
+			<artifactId>modelmapper</artifactId>
+			<version>${modelmapper.version}</version>
 		</dependency>
 
 		<dependency>
@@ -114,32 +115,27 @@
 					<target>17</target>
 					<encoding>UTF-8</encoding>
 					<annotationProcessorPaths>
-						<path>
-							<groupId>org.mapstruct</groupId>
-							<artifactId>mapstruct-processor</artifactId>
-							<version>${org.mapstruct.version}</version>
-						</path>
+						<!-- Apenas Lombok -->
 						<path>
 							<groupId>org.projectlombok</groupId>
 							<artifactId>lombok</artifactId>
 							<version>${lombok.version}</version>
 						</path>
-						<path>
-							<groupId>org.projectlombok</groupId>
-							<artifactId>lombok-mapstruct-binding</artifactId>
-							<version>0.2.0</version>
-						</path>
 					</annotationProcessorPaths>
 				</configuration>
 			</plugin>
+
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
-					<argLine>-Dfile.encoding=UTF-8 -Dspring.profiles.active=test</argLine>
+					<argLine>-Dfile.encoding=UTF-8</argLine>
 					<systemPropertyVariables>
 						<file.encoding>UTF-8</file.encoding>
 						<spring.profiles.active>test</spring.profiles.active>
+						<debug>false</debug>
+						<logging.level.org.springframework.boot.autoconfigure>OFF</logging.level.org.springframework.boot.autoconfigure>
 					</systemPropertyVariables>
 				</configuration>
 			</plugin>
