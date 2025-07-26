@@ -1,5 +1,6 @@
 package com.felypeganzert.backend.service;
 
+import com.felypeganzert.backend.dto.LinhaDTO;
 import com.felypeganzert.backend.dto.TipoEntidadeDTO;
 import com.felypeganzert.backend.entity.TipoEntidade;
 import com.felypeganzert.backend.entity.Linha;
@@ -63,10 +64,13 @@ class TipoEntidadeServiceTest {
                 .ativo(true)
                 .build();
 
+
+        LinhaDTO linhaDTO = LinhaDTO.builder().id(1L).nome("Linha dos Pretos Velhos").build();
+
         TipoEntidadeDTO tipoEntidadeDTO1 = TipoEntidadeDTO.builder()
                 .id(1L)
                 .nome("Preto Velho Teste")
-                .linhaId(1L)
+                .linha(linhaDTO)
                 .descricao("Entidades de sabedoria")
                 .caracteristicas("Sábios e conselheiros")
                 .areaAtuacao("Cura e aconselhamento")
@@ -76,7 +80,7 @@ class TipoEntidadeServiceTest {
         TipoEntidadeDTO tipoEntidadeDTO2 = TipoEntidadeDTO.builder()
                 .id(2L)
                 .nome("Caboclo Teste")
-                .linhaId(1L)
+                .linha(linhaDTO)
                 .descricao("Entidades da natureza")
                 .caracteristicas("Guardiões das matas")
                 .areaAtuacao("Proteção e cura")

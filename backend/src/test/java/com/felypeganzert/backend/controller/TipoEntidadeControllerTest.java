@@ -21,6 +21,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.felypeganzert.backend.dto.LinhaDTO;
 import com.felypeganzert.backend.dto.TipoEntidadeDTO;
 import com.felypeganzert.backend.service.TipoEntidadeService;
 
@@ -39,10 +40,14 @@ class TipoEntidadeControllerTest {
     @DisplayName("GET /api/v1/tipos-entidade - Deve retornar lista de tipos de entidade ativos")
     void testFindAllAtivos() throws Exception {
         // Given
+
+        LinhaDTO linhaDTO1 = LinhaDTO.builder().id(1L).nome("Linha de Oxalá").build();
+        LinhaDTO linhaDTO2 = LinhaDTO.builder().id(2L).nome("Linha de Iemanjá").build();
+
         TipoEntidadeDTO tipoEntidadeDTO1 = TipoEntidadeDTO.builder()
                 .id(1L)
                 .nome("Preto Velho Teste")
-                .linhaId(1L)
+                .linha(linhaDTO1)
                 .descricao("Entidades de sabedoria")
                 .caracteristicas("Sábios e conselheiros")
                 .areaAtuacao("Cura e aconselhamento")
@@ -52,7 +57,7 @@ class TipoEntidadeControllerTest {
         TipoEntidadeDTO tipoEntidadeDTO2 = TipoEntidadeDTO.builder()
                 .id(2L)
                 .nome("Caboclo Teste")
-                .linhaId(2L)
+                .linha(linhaDTO2)
                 .descricao("Entidades da natureza")
                 .caracteristicas("Guardiões das matas")
                 .areaAtuacao("Proteção e cura")
@@ -72,14 +77,14 @@ class TipoEntidadeControllerTest {
                 .andExpect(jsonPath("$.length()").value(2))
                 .andExpect(jsonPath("$[0].id").value(1))
                 .andExpect(jsonPath("$[0].nome").value("Preto Velho Teste"))
-                .andExpect(jsonPath("$[0].linhaId").value(1))
+                .andExpect(jsonPath("$[0].linha.id").value(1))
                 .andExpect(jsonPath("$[0].descricao").value("Entidades de sabedoria"))
                 .andExpect(jsonPath("$[0].caracteristicas").value("Sábios e conselheiros"))
                 .andExpect(jsonPath("$[0].areaAtuacao").value("Cura e aconselhamento"))
                 .andExpect(jsonPath("$[0].ativo").value(true))
                 .andExpect(jsonPath("$[1].id").value(2))
                 .andExpect(jsonPath("$[1].nome").value("Caboclo Teste"))
-                .andExpect(jsonPath("$[1].linhaId").value(2))
+                .andExpect(jsonPath("$[1].linha.id").value(2))
                 .andExpect(jsonPath("$[1].descricao").value("Entidades da natureza"))
                 .andExpect(jsonPath("$[1].caracteristicas").value("Guardiões das matas"))
                 .andExpect(jsonPath("$[1].areaAtuacao").value("Proteção e cura"))
@@ -134,7 +139,7 @@ class TipoEntidadeControllerTest {
                 .andExpect(jsonPath("$.length()").value(1))
                 .andExpect(jsonPath("$[0].id").value(1))
                 .andExpect(jsonPath("$[0].nome").value("Tipo Independente Teste"))
-                .andExpect(jsonPath("$[0].linhaId").isEmpty())
+                .andExpect(jsonPath("$[0].linha").isEmpty())
                 .andExpect(jsonPath("$[0].descricao").value("Entidade sem linha específica"))
                 .andExpect(jsonPath("$[0].caracteristicas").value("Características gerais"))
                 .andExpect(jsonPath("$[0].areaAtuacao").value("Atuação geral"))

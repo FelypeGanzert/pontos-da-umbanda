@@ -1,5 +1,7 @@
 package com.felypeganzert.backend.dto;
 
+import java.time.LocalDateTime;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -7,8 +9,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -23,9 +23,9 @@ public class LinhaDTO {
     private String nome;
 
     @NotNull(message = "O Orixá regente é obrigatório")
-    private Long orixaRegenteId;
+    private OrixaDTO orixaRegente;
 
-    private Long orixaAdjuntoId;
+    private OrixaDTO orixaAdjunto;
 
     @NotBlank(message = "A descrição da Linha é obrigatória")
     private String descricao;

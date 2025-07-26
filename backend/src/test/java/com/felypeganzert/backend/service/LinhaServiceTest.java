@@ -1,10 +1,14 @@
 package com.felypeganzert.backend.service;
 
-import com.felypeganzert.backend.dto.LinhaDTO;
-import com.felypeganzert.backend.entity.Linha;
-import com.felypeganzert.backend.entity.Orixa;
-import com.felypeganzert.backend.mapper.LinhaMapper;
-import com.felypeganzert.backend.repository.LinhaRepository;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,14 +16,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
+import com.felypeganzert.backend.dto.LinhaDTO;
+import com.felypeganzert.backend.dto.OrixaDTO;
+import com.felypeganzert.backend.entity.Linha;
+import com.felypeganzert.backend.entity.Orixa;
+import com.felypeganzert.backend.mapper.LinhaMapper;
+import com.felypeganzert.backend.repository.LinhaRepository;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Testes do LinhaService")
@@ -63,10 +65,13 @@ class LinhaServiceTest {
 
         List<Linha> linhas = Arrays.asList(linha1, linha2);
 
+
+        OrixaDTO orixaDTO = OrixaDTO.builder().id(1L).nome("Oxalá").build();
+
         LinhaDTO linhaDTO1 = LinhaDTO.builder()
                 .id(1L)
                 .nome("Linha de Oxalá")
-                .orixaRegenteId(1L)
+                .orixaRegente(orixaDTO)
                 .descricao("Linha da paz")
                 .numeroOrdem(1)
                 .ativo(true)
@@ -75,7 +80,7 @@ class LinhaServiceTest {
         LinhaDTO linhaDTO2 = LinhaDTO.builder()
                 .id(2L)
                 .nome("Linha de Iemanjá")
-                .orixaRegenteId(1L)
+                .orixaRegente(orixaDTO)
                 .descricao("Linha do mar")
                 .numeroOrdem(2)
                 .ativo(true)

@@ -2,6 +2,7 @@ package com.felypeganzert.backend.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+// ...existing code...
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,7 +22,7 @@ public class TipoEntidadeDTO {
     @Size(max = 80, message = "O nome deve ter no máximo 80 caracteres")
     private String nome;
 
-    private Long linhaId;
+    private LinhaDTO linha;
 
     @NotBlank(message = "A descrição do Tipo de Entidade é obrigatória")
     private String descricao;
