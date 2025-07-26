@@ -88,11 +88,11 @@ Para garantir implementação consistente, toda solicitação deve incluir:
 - **Se NÃO para 21**: ⚠️ Testes vão interferir uns nos outros
 
 ### **✅ IMPLEMENTAÇÃO PADRÃO (Se não especificado)**
-- **Endpoints**: Apenas `/ativos` (GET)
+- **Endpoints**: Apenas `/` (GET)
 - **DTOs**: Relacionamentos como IDs, não objetos
 - **Relacionamentos JPA**: `@ManyToOne` com `LAZY`
 - **Testes**: Repository + Service + Controller
-- **Logs**: `@Slf4j` com `debug` para operações
+- **Logs**: `@Slf4j` com `debug` para operações. Porém no momento não adicionar logs
 - **Mapeamento**: ModelMapper com @Component e configuração STRICT
 - **Dados de Teste**: Criar únicos por teste, sem deleteAll()
 
