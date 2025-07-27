@@ -8,8 +8,11 @@
 - Remover complexidades desnecessárias (índices desnecessários, DTOs múltiplos, métodos não utilizados)
 - Seguir o princípio YAGNI (You Aren't Gonna Need It)
 
-### **Padrões de Código**
+-### **Padrões de Código**
 - **Spring Boot**: Usar anotações padrão (`@RestController`, `@Service`, `@Repository`)
+    - **Controllers:**
+        - Não usar `ResponseEntity` nos métodos. Retornar diretamente o objeto/DTO.
+        - Em métodos de criação (`POST`), usar `@ResponseStatus(HttpStatus.CREATED)`.
 - **Lombok**: Usar para reduzir boilerplate (`@Data`, `@Builder`, `@RequiredArgsConstructor`, `@Slf4j`)
 - **ModelMapper**: OBRIGATÓRIO para mapeamento de objetos (substitui MapStruct devido a problemas de compatibilidade com Lombok)
 - **Validation**: Usar Bean Validation (`@NotBlank`, `@Size`, `@NotNull`)
