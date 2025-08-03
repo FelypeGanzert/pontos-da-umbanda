@@ -1,5 +1,4 @@
 package com.felypeganzert.backend.controller;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -22,6 +21,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.felypeganzert.backend.config.TestSecurityConfig;
 import com.felypeganzert.backend.dto.PontoCantadoDTO;
+import com.felypeganzert.backend.dto.UsuarioDTO;
 import com.felypeganzert.backend.service.PontoCantadoService;
 
 @WebMvcTest(PontoCantadoController.class)
@@ -38,11 +38,12 @@ class PontoCantadoControllerTest {
     @Test
     @DisplayName("Deve listar pontos cantados ativos")
     void findAllAtivos() throws Exception {
+        UsuarioDTO usuario = UsuarioDTO.builder().id(10L).nome("Usuario Teste").build();
         PontoCantadoDTO dto = PontoCantadoDTO.builder()
                 .id(1L)
                 .titulo("TITULO")
                 .letraCompleta("Letra completa obrigatória")
-                .usuarioContribuidorId(10L)
+                .usuarioContribuidor(usuario)
                 .build();
         Mockito.when(pontoCantadoService.findAllAtivos()).thenReturn(List.of(dto));
         mockMvc.perform(MockMvcRequestBuilders.get("/api/pontos-cantados"))
@@ -53,11 +54,12 @@ class PontoCantadoControllerTest {
     @Test
     @DisplayName("Deve buscar ponto cantado por id")
     void findById() throws Exception {
+        UsuarioDTO usuario = UsuarioDTO.builder().id(10L).nome("Usuario Teste").build();
         PontoCantadoDTO dto = PontoCantadoDTO.builder()
                 .id(1L)
                 .titulo("TITULO")
                 .letraCompleta("Letra completa obrigatória")
-                .usuarioContribuidorId(10L)
+                .usuarioContribuidor(usuario)
                 .build();
         Mockito.when(pontoCantadoService.findById(1L)).thenReturn(dto);
         mockMvc.perform(MockMvcRequestBuilders.get("/api/pontos-cantados/1"))
@@ -69,17 +71,18 @@ class PontoCantadoControllerTest {
     @WithMockUser
     @DisplayName("Deve criar um ponto cantado")
     void create() throws Exception {
+        UsuarioDTO usuario = UsuarioDTO.builder().id(10L).nome("Usuario Teste").build();
         PontoCantadoDTO dto = PontoCantadoDTO.builder()
                 .id(1L)
                 .titulo("NOVO")
                 .letraCompleta("Letra completa obrigatória")
-                .usuarioContribuidorId(10L)
+                .usuarioContribuidor(usuario)
                 .build();
         Mockito.when(pontoCantadoService.save(any())).thenReturn(dto);
         String json = "{" +
                 "\"titulo\":\"NOVO\"," +
                 "\"letraCompleta\":\"Letra completa obrigatória\"," +
-                "\"usuarioContribuidorId\":10" +
+                "\"usuarioContribuidor\":{\"id\":10}" +
                 "}";
         mockMvc.perform(MockMvcRequestBuilders.post("/api/pontos-cantados")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -91,17 +94,18 @@ class PontoCantadoControllerTest {
     @Test
     @DisplayName("Deve atualizar um ponto cantado")
     void update() throws Exception {
+        UsuarioDTO usuario = UsuarioDTO.builder().id(10L).nome("Usuario Teste").build();
         PontoCantadoDTO dto = PontoCantadoDTO.builder()
                 .id(1L)
                 .titulo("ATUALIZADO")
                 .letraCompleta("Letra completa obrigatória")
-                .usuarioContribuidorId(10L)
+                .usuarioContribuidor(usuario)
                 .build();
         Mockito.when(pontoCantadoService.update(eq(1L), any())).thenReturn(dto);
         String json = "{" +
                 "\"titulo\":\"ATUALIZADO\"," +
                 "\"letraCompleta\":\"Letra completa obrigatória\"," +
-                "\"usuarioContribuidorId\":10" +
+                "\"usuarioContribuidor\":{\"id\":10}" +
                 "}";
         mockMvc.perform(MockMvcRequestBuilders.put("/api/pontos-cantados/1")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -116,4 +120,5 @@ class PontoCantadoControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/pontos-cantados/1"))
                 .andExpect(status().isNoContent());
     }
+
 }

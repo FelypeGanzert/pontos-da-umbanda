@@ -43,9 +43,9 @@ public class PontoCantadoDTO {
     private String regiaoOrigem;
     private LocalDateTime dataContribuicao;
     @NotNull(message = "O usuário contribuidor é obrigatório")
-    private Long usuarioContribuidorId;
+    private UsuarioDTO usuarioContribuidor;
     private String statusModeracao;
-    private Long moderadorId;
+    private UsuarioDTO moderador;
     private LocalDateTime dataModeracao;
     private String motivoRejeicao;
     @Builder.Default
