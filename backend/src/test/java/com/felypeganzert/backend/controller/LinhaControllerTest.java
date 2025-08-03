@@ -22,6 +22,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.felypeganzert.backend.dto.LinhaDTO;
+import com.felypeganzert.backend.dto.OrixaDTO;
 import com.felypeganzert.backend.service.LinhaService;
 
 @WebMvcTest(LinhaController.class)
@@ -39,10 +40,14 @@ class LinhaControllerTest {
     @DisplayName("GET /api/v1/linhas/ativos - Deve retornar lista de linhas ativas")
     void testFindAllAtivos() throws Exception {
         // Given
+
+        OrixaDTO orixa1 = OrixaDTO.builder().id(1L).nome("Oxalá").build();
+        OrixaDTO orixa2 = OrixaDTO.builder().id(2L).nome("Iemanjá").build();
+
         LinhaDTO linhaDTO1 = LinhaDTO.builder()
                 .id(1L)
                 .nome("Linha de Oxalá")
-                .orixaRegenteId(1L)
+                .orixaRegente(orixa1)
                 .descricao("Linha da paz")
                 .numeroOrdem(1)
                 .ativo(true)
@@ -51,7 +56,7 @@ class LinhaControllerTest {
         LinhaDTO linhaDTO2 = LinhaDTO.builder()
                 .id(2L)
                 .nome("Linha de Iemanjá")
-                .orixaRegenteId(2L)
+                .orixaRegente(orixa2)
                 .descricao("Linha do mar")
                 .numeroOrdem(2)
                 .ativo(true)
@@ -70,13 +75,13 @@ class LinhaControllerTest {
                 .andExpect(jsonPath("$.length()").value(2))
                 .andExpect(jsonPath("$[0].id").value(1))
                 .andExpect(jsonPath("$[0].nome").value("Linha de Oxalá"))
-                .andExpect(jsonPath("$[0].orixaRegenteId").value(1))
+                .andExpect(jsonPath("$[0].orixaRegente.id").value(1))
                 .andExpect(jsonPath("$[0].descricao").value("Linha da paz"))
                 .andExpect(jsonPath("$[0].numeroOrdem").value(1))
                 .andExpect(jsonPath("$[0].ativo").value(true))
                 .andExpect(jsonPath("$[1].id").value(2))
                 .andExpect(jsonPath("$[1].nome").value("Linha de Iemanjá"))
-                .andExpect(jsonPath("$[1].orixaRegenteId").value(2))
+                .andExpect(jsonPath("$[1].orixaRegente.id").value(2))
                 .andExpect(jsonPath("$[1].descricao").value("Linha do mar"))
                 .andExpect(jsonPath("$[1].numeroOrdem").value(2))
                 .andExpect(jsonPath("$[1].ativo").value(true));
@@ -87,7 +92,7 @@ class LinhaControllerTest {
 
     @Test
     @DisplayName("GET /api/v1/linhas/ativos - Deve retornar lista vazia quando não há linhas ativas")
-    void testFindAllAtivos_QuandoNaoHaLinhasAtivas() throws Exception {
+    void testFindAllAtivosQuandoNaoHaLinhasAtivas() throws Exception {
         // Given
         List<LinhaDTO> linhaDTOsVazias = Collections.emptyList();
 

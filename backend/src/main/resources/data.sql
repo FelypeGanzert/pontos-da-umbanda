@@ -1,3 +1,4 @@
+
 -- Inserção de dados iniciais para a tabela orixas
 -- Arquivo de dados para desenvolvimento com banco H2
 -- Este arquivo será executado após o schema.sql
@@ -33,3 +34,19 @@ INSERT INTO linhas (nome, orixa_regente_id, orixa_adjunto_id, descricao, caracte
 ('Linha das Águas', 6, 5, 'Linha de Oxum e Iemanjá unidas', 'Trabalham com amor, prosperidade, maternidade', 'Dourado, Azul', 'Águas, espelhos, jóias', 7),
 ('Linha Mista', 1, 2, 'Linha de trabalhos diversos com Oxalá e Ogum', 'Trabalham com paz e proteção, caminhos abertos com sabedoria', 'Branco, Verde', 'Velas brancas e verdes, água e espada', 8);
 
+
+-- Dados iniciais para a tabela finalidades
+INSERT INTO finalidades (nome, descricao, categoria, uso_ritual, momento_gira, ativo) VALUES
+('Abertura', 'Abertura dos trabalhos', null, null, null, true),
+('Trabalho', 'Finalidade de trabalho', null, null, null, true),
+('Cura', 'Finalidade de cura', null, null, null, true),
+('Proteção', 'Finalidade de proteção', null, null, null, true),
+('Fechamento', 'Fechamento dos trabalhos', null, null, null, true),
+('Chegada', 'Chegada das entidades', null, null, null, true),
+('Partida', 'Partida das entidades', null, null, null, true),
+('Vibração', 'Vibração energética', null, null, null, true),
+('Defumação', 'Defumação do ambiente', null, null, null, true),
+('Descarrego', 'Descarrego espiritual', null, null, null, true),
+('Fluidificação', 'Fluidificação de elementos', null, null, null, true),
+('Demanda', 'Atuação em demandas', null, null, null, true),
+('Oferenda', 'Oferenda ritualística', null, null, null, true);
