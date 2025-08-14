@@ -35,7 +35,9 @@ class TagServiceTest {
     private TagService service;
 
     @BeforeEach
-    void setUp() { MockitoAnnotations.openMocks(this); }
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
 
     @Test
     @DisplayName("Deve retornar todas as tags")
@@ -95,7 +97,7 @@ class TagServiceTest {
     @Test
     @DisplayName("Deve deletar uma tag não utilizada")
     void delete() {
-        when(pontoCantadoRepository.existsByTags_Id(1L)).thenReturn(false);
+        when(pontoCantadoRepository.existsByTagsId(1L)).thenReturn(false);
         doNothing().when(repository).deleteById(1L);
         service.delete(1L);
         verify(repository).deleteById(1L);
@@ -104,14 +106,14 @@ class TagServiceTest {
     @Test
     @DisplayName("Não deve deletar tag em uso")
     void deleteInUse() {
-        when(pontoCantadoRepository.existsByTags_Id(1L)).thenReturn(true);
+        when(pontoCantadoRepository.existsByTagsId(1L)).thenReturn(true);
         assertThatThrownBy(() -> service.delete(1L)).isInstanceOf(IllegalStateException.class);
     }
 
     @Test
     @DisplayName("Deve verificar se tag está em uso")
     void existsTagInUse() {
-        when(pontoCantadoRepository.existsByTags_Id(1L)).thenReturn(true);
-        assertThat(pontoCantadoRepository.existsByTags_Id(1L)).isTrue();
+        when(pontoCantadoRepository.existsByTagsId(1L)).thenReturn(true);
+        assertThat(pontoCantadoRepository.existsByTagsId(1L)).isTrue();
     }
 }

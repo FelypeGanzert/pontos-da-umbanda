@@ -94,14 +94,16 @@ public class PontoCantado {
 
     private LocalDateTime dataContribuicao;
 
-    @Column(name = "usuario_contribuidor_id", nullable = false)
-    private Long usuarioContribuidorId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "usuario_contribuidor_id", nullable = false)
+    private Usuario usuarioContribuidor;
 
     @Column(length = 20)
     private String statusModeracao;
 
-    @Column(name = "moderador_id")
-    private Long moderadorId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "moderador_id")
+    private Usuario moderador;
 
     private LocalDateTime dataModeracao;
     private String motivoRejeicao;

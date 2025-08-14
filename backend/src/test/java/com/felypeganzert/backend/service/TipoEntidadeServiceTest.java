@@ -108,7 +108,7 @@ class TipoEntidadeServiceTest {
 
     @Test
     @DisplayName("Deve retornar lista vazia quando não há tipos de entidade ativos")
-    void testFindAllAtivos_EmptyList() {
+    void testFindAllAtivosEmptyList() {
         // Given
         List<TipoEntidade> emptyList = Collections.emptyList();
         List<TipoEntidadeDTO> emptyDTOList = Collections.emptyList();
@@ -130,7 +130,7 @@ class TipoEntidadeServiceTest {
 
     @Test
     @DisplayName("Deve retornar apenas tipos de entidade ativos")
-    void testFindAllAtivos_OnlyActive() {
+    void testFindAllAtivosOnlyActive() {
         // Given
         TipoEntidade tipoEntidadeAtivo = TipoEntidade.builder()
                 .id(1L)

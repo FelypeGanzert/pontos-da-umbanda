@@ -1,4 +1,15 @@
 
+DROP TABLE IF EXISTS youtube_urls;
+DROP TABLE IF EXISTS ponto_cantado_tags;
+DROP TABLE IF EXISTS pontos_cantados;
+DROP TABLE IF EXISTS tags;
+DROP TABLE IF EXISTS finalidades;
+DROP TABLE IF EXISTS entidades_especificas;
+DROP TABLE IF EXISTS tipos_entidade;
+DROP TABLE IF EXISTS linhas;
+DROP TABLE IF EXISTS orixas;
+DROP TABLE IF EXISTS usuarios;
+
 -- Schema SQL para criação das tabelas do banco de dados
 -- Arquivo de schema para desenvolvimento com banco H2
 -- Este arquivo será executado antes do data.sql

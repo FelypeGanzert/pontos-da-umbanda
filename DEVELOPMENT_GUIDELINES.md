@@ -36,6 +36,49 @@ Controller → Service → Repository → Entity
 - **Evitar** relacionamentos bidirecionais desnecessários
 - **Não** usar `@OneToMany` a menos que seja essencial para o negócio
 
+### **Qualidade de Código - Checkstyle**
+
+#### **⚠️ REGRAS OBRIGATÓRIAS PARA APROVAÇÃO NO CHECKSTYLE**
+
+**Imports:**
+- **NUNCA usar imports com `*`** (`import lombok.*;`, `import jakarta.persistence.*;`)
+- **SEMPRE** importar classes individualmente (`import lombok.Data;`, `import jakarta.persistence.Entity;`)
+
+**Nomenclatura de Métodos:**
+- **APENAS camelCase**: `findAllAtivos()`, `testFindAllAtivosEmptyList()`
+- **NUNCA usar underscore**: ~~`findAllAtivos_EmptyList()`~~, ~~`findByTags_Id()`~~
+- **Repository methods**: `findByTagsId()` ao invés de `findByTags_Id()`
+
+**Formatação de Chaves:**
+- **Método setUp deve usar quebra de linha após `{`**:
+```java
+// ✅ CORRETO
+@BeforeEach
+void setUp() {
+    MockitoAnnotations.openMocks(this);
+}
+
+// ❌ ERRADO
+@BeforeEach
+void setUp() { MockitoAnnotations.openMocks(this); }
+```
+
+**Concatenação de Strings:**
+- **Operador `+` deve estar no início da nova linha**:
+```java
+// ✅ CORRETO
+String json = "{"
+        + "\"titulo\":\"NOVO\","
+        + "\"letraCompleta\":\"Letra completa\""
+        + "}";
+
+// ❌ ERRADO
+String json = "{" +
+        "\"titulo\":\"NOVO\"," +
+        "\"letraCompleta\":\"Letra completa\"" +
+        "}";
+```
+
 ## 🧪 **Testes & Qualidade**
 
 ### **Cobertura de Testes Obrigatória**

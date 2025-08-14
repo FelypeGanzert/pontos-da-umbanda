@@ -32,7 +32,9 @@ class YoutubeUrlServiceTest {
     private YoutubeUrlService service;
 
     @BeforeEach
-    void setUp() { MockitoAnnotations.openMocks(this); }
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
 
     @Test
     @DisplayName("Deve listar URLs por ponto cantado")
