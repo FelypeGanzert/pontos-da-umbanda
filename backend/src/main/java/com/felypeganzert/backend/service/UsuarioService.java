@@ -53,9 +53,15 @@ public class UsuarioService {
         }
         
         // Definir valores padrão se não fornecidos
-        if (entity.getRole() == null) entity.setRole("USER");
-        if (entity.getStatus() == null) entity.setStatus("ATIVO");
-        if (entity.getEmailVerificado() == null) entity.setEmailVerificado(false);
+        if (entity.getRole() == null) {
+            entity.setRole("USER");
+        }
+        if (entity.getStatus() == null) {
+            entity.setStatus("ATIVO");
+        }
+        if (entity.getEmailVerificado() == null) {
+            entity.setEmailVerificado(false);
+        }
         
         entity.setDataCriacao(LocalDateTime.now());
         entity.setDataAtualizacao(LocalDateTime.now());

@@ -12,7 +12,7 @@ import com.felypeganzert.backend.entity.PontoCantado;
 public interface PontoCantadoRepository extends JpaRepository<PontoCantado, Long> {
     List<PontoCantado> findByAtivoTrue();
 
-    List<PontoCantado> findByTags_Id(Long tagId);
+    List<PontoCantado> findByTagsId(Long tagId);
 
-    boolean existsByTags_Id(Long tagId);
+    boolean existsByTagsId(Long tagId);
 }

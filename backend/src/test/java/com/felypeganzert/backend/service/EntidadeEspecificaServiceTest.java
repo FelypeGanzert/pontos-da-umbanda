@@ -63,7 +63,7 @@ class EntidadeEspecificaServiceTest {
 
     @Test
     @DisplayName("Deve retornar lista vazia quando não há entidades ativas")
-    void testFindAllAtivos_EmptyList() {
+    void testFindAllAtivosEmptyList() {
         // Given
         List<EntidadeEspecifica> emptyList = Collections.emptyList();
         List<EntidadeEspecificaDTO> emptyDTOList = Collections.emptyList();

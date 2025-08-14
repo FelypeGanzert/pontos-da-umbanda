@@ -14,7 +14,9 @@ public class UsuarioMapper {
     private ModelMapper modelMapper;
 
     public UsuarioDTO toDTO(Usuario entity) {
-        if (entity == null) return null;
+        if (entity == null) {
+            return null;
+        }
         UsuarioDTO dto = modelMapper.map(entity, UsuarioDTO.class);
         // Não mapear senha para DTO por segurança
         dto.setSenha(null);
@@ -22,7 +24,9 @@ public class UsuarioMapper {
     }
 
     public Usuario toEntity(UsuarioDTO dto) {
-        if (dto == null) return null;
+        if (dto == null) {
+            return null;
+        }
         Usuario entity = modelMapper.map(dto, Usuario.class);
         // Mapear senha para senhaHash
         if (dto.getSenha() != null) {

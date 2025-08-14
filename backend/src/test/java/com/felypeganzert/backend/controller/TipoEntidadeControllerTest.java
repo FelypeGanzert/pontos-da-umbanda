@@ -96,7 +96,7 @@ class TipoEntidadeControllerTest {
 
     @Test
     @DisplayName("GET /api/v1/tipos-entidade - Deve retornar lista vazia quando não há tipos de entidade")
-    void testFindAllAtivos_EmptyList() throws Exception {
+    void testFindAllAtivosEmptyList() throws Exception {
         // Given
         List<TipoEntidadeDTO> emptyList = Collections.emptyList();
         when(tipoEntidadeService.findAllAtivos()).thenReturn(emptyList);
@@ -115,7 +115,7 @@ class TipoEntidadeControllerTest {
 
     @Test
     @DisplayName("GET /api/v1/tipos-entidade - Deve retornar tipo de entidade sem relacionamento")
-    void testFindAllAtivos_WithoutRelationship() throws Exception {
+    void testFindAllAtivosWithoutRelationship() throws Exception {
         // Given
         TipoEntidadeDTO tipoEntidadeDTO = TipoEntidadeDTO.builder()
                 .id(1L)

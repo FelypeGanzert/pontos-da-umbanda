@@ -52,7 +52,7 @@ public class TagService {
 
     @Transactional
     public void delete(Long id) {
-        if (pontoCantadoRepository.existsByTags_Id(id)) {
+        if (pontoCantadoRepository.existsByTagsId(id)) {
             throw new IllegalStateException("Não é possível excluir a tag pois ela está sendo utilizada por um ou mais pontos cantados.");
         }
         repository.deleteById(id);

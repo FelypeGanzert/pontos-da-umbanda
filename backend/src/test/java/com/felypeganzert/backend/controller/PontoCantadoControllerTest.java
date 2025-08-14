@@ -79,11 +79,11 @@ class PontoCantadoControllerTest {
                 .usuarioContribuidor(usuario)
                 .build();
         Mockito.when(pontoCantadoService.save(any())).thenReturn(dto);
-        String json = "{" +
-                "\"titulo\":\"NOVO\"," +
-                "\"letraCompleta\":\"Letra completa obrigatória\"," +
-                "\"usuarioContribuidor\":{\"id\":10}" +
-                "}";
+        String json = "{"
+                + "\"titulo\":\"NOVO\","
+                + "\"letraCompleta\":\"Letra completa obrigatória\","
+                + "\"usuarioContribuidor\":{\"id\":10}"
+                + "}";
         mockMvc.perform(MockMvcRequestBuilders.post("/api/pontos-cantados")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json))
@@ -102,11 +102,11 @@ class PontoCantadoControllerTest {
                 .usuarioContribuidor(usuario)
                 .build();
         Mockito.when(pontoCantadoService.update(eq(1L), any())).thenReturn(dto);
-        String json = "{" +
-                "\"titulo\":\"ATUALIZADO\"," +
-                "\"letraCompleta\":\"Letra completa obrigatória\"," +
-                "\"usuarioContribuidor\":{\"id\":10}" +
-                "}";
+        String json = "{"
+                + "\"titulo\":\"ATUALIZADO\","
+                + "\"letraCompleta\":\"Letra completa obrigatória\","
+                + "\"usuarioContribuidor\":{\"id\":10}"
+                + "}";
         mockMvc.perform(MockMvcRequestBuilders.put("/api/pontos-cantados/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json))

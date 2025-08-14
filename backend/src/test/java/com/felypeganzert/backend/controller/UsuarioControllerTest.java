@@ -20,7 +20,9 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(UsuarioController.class)
 @Import(TestSecurityConfig.class)
@@ -112,11 +114,11 @@ class UsuarioControllerTest {
                 .build();
         when(usuarioService.save(any())).thenReturn(dto);
 
-        String json = "{" +
-                "\"nome\":\"Usuario Teste\"," +
-                "\"email\":\"teste@email.com\"," +
-                "\"senha\":\"password123\"" +
-                "}";
+        String json = "{"
+                + "\"nome\":\"Usuario Teste\","
+                + "\"email\":\"teste@email.com\","
+                + "\"senha\":\"password123\""
+                + "}";
 
         // When & Then
         mockMvc.perform(MockMvcRequestBuilders.post("/api/usuarios")
@@ -141,11 +143,11 @@ class UsuarioControllerTest {
                 .build();
         when(usuarioService.update(eq(1L), any())).thenReturn(dto);
 
-        String json = "{" +
-                "\"nome\":\"Usuario Atualizado\"," +
-                "\"email\":\"atualizado@email.com\"," +
-                "\"senha\":\"newpassword123\"" +
-                "}";
+        String json = "{"
+                + "\"nome\":\"Usuario Atualizado\","
+                + "\"email\":\"atualizado@email.com\","
+                + "\"senha\":\"newpassword123\""
+                + "}";
 
         // When & Then
         mockMvc.perform(MockMvcRequestBuilders.put("/api/usuarios/1")
@@ -183,11 +185,11 @@ class UsuarioControllerTest {
     @Test
     @DisplayName("Deve retornar erro 400 para dados inválidos na criação")
     void createInvalidData() throws Exception {
-        String json = "{" +
-                "\"nome\":\"\"," +
-                "\"email\":\"email-invalido\"," +
-                "\"senha\":\"123\"" +
-                "}";
+        String json = "{"
+                + "\"nome\":\"\","
+                + "\"email\":\"email-invalido\","
+                + "\"senha\":\"123\""
+                + "}";
 
         // When & Then
         mockMvc.perform(MockMvcRequestBuilders.post("/api/usuarios")

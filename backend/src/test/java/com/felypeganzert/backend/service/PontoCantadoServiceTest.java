@@ -38,7 +38,9 @@ class PontoCantadoServiceTest {
     private PontoCantadoService service;
 
     @BeforeEach
-    void setUp() { MockitoAnnotations.openMocks(this); }
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
 
     @Test
     @DisplayName("Deve listar pontos cantados ativos")

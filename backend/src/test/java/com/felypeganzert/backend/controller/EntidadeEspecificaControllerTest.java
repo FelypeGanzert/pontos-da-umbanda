@@ -19,7 +19,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(EntidadeEspecificaController.class)
 @WithMockUser
@@ -62,7 +64,7 @@ class EntidadeEspecificaControllerTest {
 
     @Test
     @DisplayName("GET /api/v1/entidades-especificas - Deve retornar lista vazia quando não há entidades específicas ativas")
-    void testFindAllAtivos_EmptyList() throws Exception {
+    void testFindAllAtivosEmptyList() throws Exception {
         // Given
         List<EntidadeEspecificaDTO> emptyList = Collections.emptyList();
         when(service.findAllAtivos()).thenReturn(emptyList);

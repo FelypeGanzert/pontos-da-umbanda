@@ -63,7 +63,7 @@ class FinalidadeServiceTest {
 
     @Test
     @DisplayName("Deve retornar lista vazia quando não há finalidades ativas")
-    void testFindAllAtivos_EmptyList() {
+    void testFindAllAtivosEmptyList() {
         // Given
         List<Finalidade> emptyList = Collections.emptyList();
         List<FinalidadeDTO> emptyDTOList = Collections.emptyList();
