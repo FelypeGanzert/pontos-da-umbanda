@@ -127,6 +127,13 @@ public class UsuarioService {
         return mapper.toDTO(saved);
     }
 
+    @Transactional(readOnly = true)
+    public Usuario getUsuarioLogado() {
+        var email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return repository.findByEmail(email)
+            .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
+    }
+
     @Transactional
     public void delete(Long id) {
         if (!repository.existsById(id)) {
