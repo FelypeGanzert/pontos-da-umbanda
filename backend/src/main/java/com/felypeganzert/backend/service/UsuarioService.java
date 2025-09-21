@@ -6,12 +6,12 @@ import com.felypeganzert.backend.exception.EntityNotFoundException;
 import com.felypeganzert.backend.mapper.UsuarioMapper;
 import com.felypeganzert.backend.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -21,22 +21,45 @@ public class UsuarioService {
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @Transactional(readOnly = true)
-    public List<UsuarioDTO> findAllAtivos() {
-        return mapper.toDTOList(repository.findByStatus("ATIVO"));
-    }
-
-    @Transactional(readOnly = true)
-    public UsuarioDTO findById(Long id) {
-        return repository.findById(id)
-                .map(mapper::toDTO)
-                .orElseThrow(() -> new EntityNotFoundException("Usuario não encontrado para o id: " + id));
-    }
-
-    @Transactional(readOnly = true)
-    public UsuarioDTO findByEmail(String email) {
+    public UsuarioDTO getAuthenticatedUser() {
+        var email = SecurityContextHolder.getContext().getAuthentication().getName();
         return repository.findByEmail(email)
-                .map(mapper::toDTO)
-                .orElseThrow(() -> new EntityNotFoundException("Usuario não encontrado para o email: " + email));
+            .map(mapper::toDTO)
+            .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
+    }
+
+    @Transactional
+    public UsuarioDTO updateAuthenticatedUser(UsuarioDTO dto) {
+        var email = SecurityContextHolder.getContext().getAuthentication().getName();
+        var usuario = repository.findByEmail(email)
+            .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
+
+        // Verifica se o email novo já existe
+        if (dto.getEmail() != null && !dto.getEmail().equals(email)) {
+            if (repository.existsByEmail(dto.getEmail())) {
+                throw new IllegalStateException("Email já está em uso: " + dto.getEmail());
+            }
+            usuario.setEmail(dto.getEmail());
+        }
+
+        // Atualiza apenas os campos permitidos
+        usuario.setNome(dto.getNome());
+        if (dto.getSenha() != null && !dto.getSenha().trim().isEmpty()) {
+            usuario.setSenhaHash(passwordEncoder.encode(dto.getSenha()));
+        }
+
+        usuario.setDataAtualizacao(LocalDateTime.now());
+        usuario = repository.save(usuario);
+        return mapper.toDTO(usuario);
+    }
+
+    @Transactional
+    public void deleteAuthenticatedUser() {
+        var email = SecurityContextHolder.getContext().getAuthentication().getName();
+        var usuario = repository.findByEmail(email)
+            .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
+        
+        repository.delete(usuario);
     }
 
     @Transactional

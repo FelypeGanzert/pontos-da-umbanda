@@ -25,7 +25,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/pontos-cantados")
+@RequestMapping("/api/v1/pontos-cantados")
 @RequiredArgsConstructor
 @Tag(name = "Pontos Cantados", description = "API para gerenciamento de pontos cantados")
 public class PontoCantadoController {

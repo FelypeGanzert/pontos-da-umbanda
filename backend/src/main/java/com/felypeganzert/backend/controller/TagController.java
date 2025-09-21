@@ -25,7 +25,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/tags")
+@RequestMapping("/api/v1/tags")
 @RequiredArgsConstructor
 @Tag(name = "Tags", description = "API para gerenciamento de tags")
 public class TagController {

@@ -12,14 +12,18 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -32,6 +36,9 @@ class UsuarioServiceTest {
 
     @Mock
     private UsuarioMapper mapper;
+
+    @Mock
+    private BCryptPasswordEncoder passwordEncoder;
 
     @InjectMocks
     private UsuarioService service;
@@ -63,59 +70,19 @@ class UsuarioServiceTest {
     }
 
     @Test
-    @DisplayName("Deve listar usuários ativos")
-    void findAllAtivos() {
+    @DisplayName("Deve retornar dados do usuário autenticado")
+    void getAuthenticatedUser() {
         // Given
-        when(repository.findByStatus("ATIVO")).thenReturn(List.of(usuario));
-        when(mapper.toDTOList(any())).thenReturn(List.of(usuarioDTO));
-
-        // When
-        List<UsuarioDTO> result = service.findAllAtivos();
-
-        // Then
-        assertThat(result).hasSize(1);
-        verify(repository).findByStatus("ATIVO");
-        verify(mapper).toDTOList(any());
-    }
-
-    @Test
-    @DisplayName("Deve buscar usuário por ID")
-    void findById() {
-        // Given
-        when(repository.findById(1L)).thenReturn(Optional.of(usuario));
-        when(mapper.toDTO(usuario)).thenReturn(usuarioDTO);
-
-        // When
-        UsuarioDTO result = service.findById(1L);
-
-        // Then
-        assertThat(result).isNotNull();
-        assertThat(result.getId()).isEqualTo(1L);
-        verify(repository).findById(1L);
-        verify(mapper).toDTO(usuario);
-    }
-
-    @Test
-    @DisplayName("Deve lançar exceção quando usuário não encontrado por ID")
-    void findByIdNotFound() {
-        // Given
-        when(repository.findById(1L)).thenReturn(Optional.empty());
-
-        // When & Then
-        assertThatThrownBy(() -> service.findById(1L))
-                .isInstanceOf(EntityNotFoundException.class)
-                .hasMessage("Usuario não encontrado para o id: 1");
-    }
-
-    @Test
-    @DisplayName("Deve buscar usuário por email")
-    void findByEmail() {
-        // Given
+        Authentication auth = mock(Authentication.class);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(auth);
+        SecurityContextHolder.setContext(securityContext);
+        when(auth.getName()).thenReturn("teste@email.com");
         when(repository.findByEmail("teste@email.com")).thenReturn(Optional.of(usuario));
         when(mapper.toDTO(usuario)).thenReturn(usuarioDTO);
 
         // When
-        UsuarioDTO result = service.findByEmail("teste@email.com");
+        UsuarioDTO result = service.getAuthenticatedUser();
 
         // Then
         assertThat(result).isNotNull();
@@ -125,15 +92,20 @@ class UsuarioServiceTest {
     }
 
     @Test
-    @DisplayName("Deve lançar exceção quando usuário não encontrado por email")
-    void findByEmailNotFound() {
+    @DisplayName("Deve lançar exceção quando usuário autenticado não encontrado")
+    void getAuthenticatedUserNotFound() {
         // Given
+        Authentication auth = mock(Authentication.class);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(auth);
+        SecurityContextHolder.setContext(securityContext);
+        when(auth.getName()).thenReturn("teste@email.com");
         when(repository.findByEmail("teste@email.com")).thenReturn(Optional.empty());
 
         // When & Then
-        assertThatThrownBy(() -> service.findByEmail("teste@email.com"))
+        assertThatThrownBy(() -> service.getAuthenticatedUser())
                 .isInstanceOf(EntityNotFoundException.class)
-                .hasMessage("Usuario não encontrado para o email: teste@email.com");
+                .hasMessage("Usuário não encontrado");
     }
 
     @Test
@@ -144,6 +116,7 @@ class UsuarioServiceTest {
         when(mapper.toEntity(usuarioDTO)).thenReturn(usuario);
         when(repository.save(any(Usuario.class))).thenReturn(usuario);
         when(mapper.toDTO(usuario)).thenReturn(usuarioDTO);
+        when(passwordEncoder.encode("password123")).thenReturn("hashedPassword");
 
         // When
         UsuarioDTO result = service.save(usuarioDTO);
@@ -154,6 +127,7 @@ class UsuarioServiceTest {
         verify(mapper).toEntity(usuarioDTO);
         verify(repository).save(any(Usuario.class));
         verify(mapper).toDTO(usuario);
+        verify(passwordEncoder).encode("password123");
     }
 
     @Test
@@ -169,91 +143,47 @@ class UsuarioServiceTest {
     }
 
     @Test
-    @DisplayName("Deve atualizar usuário existente")
-    void update() {
+    @DisplayName("Deve atualizar dados do usuário autenticado")
+    void updateAuthenticatedUser() {
         // Given
-        when(repository.existsById(1L)).thenReturn(true);
-        when(repository.findByEmail("teste@email.com")).thenReturn(Optional.empty());
-        when(mapper.toEntity(usuarioDTO)).thenReturn(usuario);
+        Authentication auth = mock(Authentication.class);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(auth);
+        SecurityContextHolder.setContext(securityContext);
+        when(auth.getName()).thenReturn("teste@email.com");
+        when(repository.findByEmail("teste@email.com")).thenReturn(Optional.of(usuario));
         when(repository.save(any(Usuario.class))).thenReturn(usuario);
         when(mapper.toDTO(usuario)).thenReturn(usuarioDTO);
+        when(passwordEncoder.encode("newpassword123")).thenReturn("newHashedPassword");
 
         // When
-        UsuarioDTO result = service.update(1L, usuarioDTO);
+        usuarioDTO.setSenha("newpassword123");
+        UsuarioDTO result = service.updateAuthenticatedUser(usuarioDTO);
 
         // Then
         assertThat(result).isNotNull();
-        verify(repository).existsById(1L);
-        verify(mapper).toEntity(usuarioDTO);
+        verify(repository).findByEmail("teste@email.com");
         verify(repository).save(any(Usuario.class));
         verify(mapper).toDTO(usuario);
+        verify(passwordEncoder).encode("newpassword123");
     }
 
     @Test
-    @DisplayName("Deve lançar exceção ao atualizar usuário inexistente")
-    void updateNotFound() {
+    @DisplayName("Deve excluir usuário autenticado")
+    void deleteAuthenticatedUser() {
         // Given
-        when(repository.existsById(1L)).thenReturn(false);
-
-        // When & Then
-        assertThatThrownBy(() -> service.update(1L, usuarioDTO))
-                .isInstanceOf(EntityNotFoundException.class)
-                .hasMessage("Usuario não encontrado para o id: 1");
-    }
-
-    @Test
-    @DisplayName("Deve deletar usuário")
-    void delete() {
-        // Given
-        when(repository.existsById(1L)).thenReturn(true);
+        Authentication auth = mock(Authentication.class);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(auth);
+        SecurityContextHolder.setContext(securityContext);
+        when(auth.getName()).thenReturn("teste@email.com");
+        when(repository.findByEmail("teste@email.com")).thenReturn(Optional.of(usuario));
 
         // When
-        service.delete(1L);
+        service.deleteAuthenticatedUser();
 
         // Then
-        verify(repository).existsById(1L);
-        verify(repository).deleteById(1L);
-    }
-
-    @Test
-    @DisplayName("Deve lançar exceção ao deletar usuário inexistente")
-    void deleteNotFound() {
-        // Given
-        when(repository.existsById(1L)).thenReturn(false);
-
-        // When & Then
-        assertThatThrownBy(() -> service.delete(1L))
-                .isInstanceOf(EntityNotFoundException.class)
-                .hasMessage("Usuario não encontrado para o id: 1");
-    }
-
-    @Test
-    @DisplayName("Deve inativar usuário")
-    void inativar() {
-        // Given
-        when(repository.findById(1L)).thenReturn(Optional.of(usuario));
-        when(repository.save(any(Usuario.class))).thenReturn(usuario);
-
-        // When
-        service.inativar(1L);
-
-        // Then
-        verify(repository).findById(1L);
-        verify(repository).save(any(Usuario.class));
-    }
-
-    @Test
-    @DisplayName("Deve ativar usuário")
-    void ativar() {
-        // Given
-        when(repository.findById(1L)).thenReturn(Optional.of(usuario));
-        when(repository.save(any(Usuario.class))).thenReturn(usuario);
-
-        // When
-        service.ativar(1L);
-
-        // Then
-        verify(repository).findById(1L);
-        verify(repository).save(any(Usuario.class));
+        verify(repository).findByEmail("teste@email.com");
+        verify(repository).delete(usuario);
     }
 }
